@@ -32,7 +32,7 @@ keep if !mi(t_kcal)
 merge 1:1 subjid using `d1'
 drop _merge
 
-*** preparing data for analysis
+*** preparing variables for analysis
 gen smk = .
 replace smk = 1 if ever == 0 & current == 0
 replace smk = 2 if ever == 1 & current == 0
@@ -48,7 +48,7 @@ replace drk = 3 if !male & alcw > 7 & !mi(alcw)
 replace drk = 2 if !male & alcw <= 7
 replace drk = 1 if alcw == 0
 lab var drk "drinks/week"
-lab def drk 1 "none" 2 "1-14 male, 1-7 female" 3 ">14 male, >7 female"
+lab def drk 1 "none" 2 "1-14 m, 1-7 f" 3 ">14 m, >7 f"
 lab val drk drk
 
 gen cal = .
@@ -93,27 +93,23 @@ rename (dailydiscr1 lifetimediscrm1 discrmburden1 diab3cat cvdhx ///
         age1 death lastdate pdsa2a) (dds ltd dsb dib cvd age dth ldt sss)
 replace dsb = 0 if ltd == 0
 
-recode age (20/49.999 = 1) (50/99 = 2), gen(agec)
-tab agec
-tab agec dth
-
 gen fem = (male == 0) if !mi(male)
 
 gen edr = ( dis2drsn == 3 | dis01ea == "Racial" )
 gen ldr = ( dis13lrn == 3 | dis01la == "Racial" )
 
-*** calculating age at death
+*** calculating age at death or censoring
 gen bdt = mdy(brthmo, 15, brthyr)
 gen agd = (ldt - bdt)/364.25
 
 *** keeping analysis sample and variables
 keep if !mi(occ)
+keep if age >= 50
 sort subjid
 gen id = _n
 order id smk drk exr fvg sbv cal age fem edu ed2 inc occ sss dds ltd dsb dib ///
-  edr ldr cvd dth ldt agd
+  edr ldr cvd dth agd
 keep id-agd
-
 save aahl-data, replace
 
 *** saving lifestyle indicators for LCA in Mplus
