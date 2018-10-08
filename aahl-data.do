@@ -81,7 +81,7 @@ lab var inc "ln family income"
 
 * setting framing, military, sick, unemployed, homemaker, retired, student, and
 * other to missing (N = 52; < 1%)
-recode occupation1 (1 = 1) (2 3 = 2) (5 6 = 3) (4 7/13 = 4), gen(occ)
+recode occupation1 (1 = 1) (2 3 = 2) (5 6 = 3) (4 7/13 = .), gen(occ)
 lab def oc 1 "management/professional" 2 "service/sales" ///
            3 "construction/production" 
 lab val occ oc
