@@ -1,0 +1,14 @@
+TITLE: JHS Health Lifestyles;
+DATA: FILE = aahl-data-mplus.txt;
+VARIABLE:	
+	NAMES        = id smk drk exr fvg sbv fem;
+	USEVARIABLES = smk drk exr fvg sbv;
+	CATEGORICAL  = smk drk exr fvg sbv;
+	MISSING      = ALL(-9);
+	CLASSES      = c(5);
+	AUXILIARY    = id;
+	USEOBS       = fem EQ 0;
+ANALYSIS:
+	TYPE 	= MIXTURE;
+	STARTS 	= 200 10;
+OUTPUT: TECH11;
