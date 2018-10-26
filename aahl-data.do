@@ -8,8 +8,8 @@ cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-7
 *** Extract variables
 use subjid male age1 fmlyinc1 edu3cat alcw1 currentsmoker1 eversmoker1  ///
     idealhealthpa1 nutrition3cat1 diab3cat1 cvdhx1 death lastdate       ///
-	dailydiscr1 lifetimediscrm1 discrmburden1 occupation1 brthyr brthmo  ///
-	using "~/dropbox/research/data/JHS/aahl-JHS-Total", replace
+	occupation1 brthyr brthmo using                                     ///
+	"~/dropbox/research/data/JHS/aahl-JHS-Total", replace
 	
 merge 1:1 subjid using "~/dropbox/research/data/JHS/aahl-JHS-data2", ///
   keepusing(pdsa18a ds_fruveg ds_swtbev)
@@ -17,10 +17,6 @@ drop _merge
 
 merge 1:1 subjid using "~/dropbox/research/data/JHS/aahl-JHS-data3", ///
   keepusing(pdsa2a)
-drop _merge
-
-merge 1:1 subjid using "~/dropbox/research/data/JHS/aahl-JHS-data4", ///
-  keepusing(dis01ea dis2drsn dis01la dis13lrn)
 drop _merge
 
 mi unset, asis
@@ -73,16 +69,10 @@ lab def oc 1 "management/professional" 2 "service/sales" ///
 lab val occ oc
 
 rename pdsa18a edu
-gen ed2 = edu^2
 
-rename (dailydiscr1 lifetimediscrm1 discrmburden1 diab3cat cvdhx ///
-        age1 death lastdate pdsa2a) (dds ltd dsb dib cvd age dth ldt sss)
-replace dsb = 0 if ltd == 0
+rename (diab3cat cvdhx age1 death lastdate pdsa2a) (dib cvd age dth ldt sss)
 
 gen fem = (male == 0) if !mi(male)
-
-gen edr = ( dis2drsn == 3 | dis01ea == "Racial" )
-gen ldr = ( dis13lrn == 3 | dis01la == "Racial" )
 
 *** calculating age at death or censoring
 gen bdt = mdy(brthmo, 15, brthyr)
@@ -93,8 +83,7 @@ keep if !mi(occ)
 keep if age >= 50
 sort subjid
 gen id = _n
-order id smk drk exr fvg sbv age fem edu ed2 inc occ sss dds ltd dsb dib edr ///
-  ldr cvd dth agd
+order id smk drk exr fvg sbv age fem edu inc occ sss cvd dth agd
 keep id-agd
 save aahl-data, replace
 
