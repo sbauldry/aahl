@@ -16,7 +16,7 @@ program ReadClass
 end
 
 *** Reading data from Mplus
-ReadClass 5 4 ls  aahl-anal-7-mplus/aahl-f1-4-cp.txt d1
+ReadClass 5 3 ls  aahl-anal-7-mplus/aahl-f1-3-cp.txt d1
 ReadClass 5 3 ls  aahl-anal-7-mplus/aahl-m1-3-cp.txt d2
 
 *** Merging with original data
@@ -26,19 +26,17 @@ merge 1:1 id using aahl-data
 drop _merge
 
 *** Recode lifestyles
-recode ls (1 = 1) (2 = 4) (3 = 3) (4 = 2) if fem == 1
+recode ls (1 = 1) (2 = 3) (3 = 2) if fem == 1
 recode ls (1 = 1) (2 = 3) (3 = 2) if fem == 0
-lab def lst 1 "UHS" 2 "UHD" 3 "HD" 4 "H"
+lab def lst 1 "UHS" 2 "UHD" 3 "HD"
 lab val ls lst
 
 
 *** Run multiple imputation for covariates
-drop ed2
 mi set wide
-mi reg impute smk drk exr fvg sbv edu inc occ sss dds ltd dsb dib edr ldr
-mi imp chain (logit) exr fvg sbv edr ldr (ologit) dib smk drk              ///
-             (mlogit) occ (regress) edu inc sss dds ltd dsb = i.ls age ///
-			 fem cvd dth agd, add(25) augment rseed(931225)
+mi reg impute smk drk fvg sbv edu inc sss dib
+mi imp chain (logit) fvg sbv (ologit) dib smk drk edu (regress) inc sss = ///
+  i.ls age fem cvd i.occ i.exr dth agd, add(25) augment rseed(93122)
 save aahl-mi-data, replace
 			 
 	
@@ -112,10 +110,10 @@ mi stset agd, failure(dth)
 
 eststo clear
 
-mi est, post: stcox b3.ls age edu ed2 inc i.occ sss dds ltd dsb i.dib cvd if !fem
+mi est, post: stcox b3.ls age edu inc i.occ sss i.dib cvd if !fem
 eststo m1
 
-mi est, post: stcox b3.ls age edu ed2 inc i.occ sss dds ltd dsb i.dib cvd if fem
+mi est, post: stcox b3.ls age edu inc i.occ sss i.dib cvd if fem
 eststo m2
 
 esttab m1 m2 , replace wide b(%5.2f) ci(%5.2f) nodep nonum ///
