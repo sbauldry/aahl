@@ -1,9 +1,9 @@
 *** Purpose: prepare JHS data for analysis of health lifestyles
 *** Author:  S Bauldry 
-*** Date:    October 1, 2018
+*** Date:    July 1, 2019
 
 *** Setting working directory
-cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-7
+cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-8
 
 *** Extract variables
 use subjid male age1 fmlyinc1 edu3cat alcw1 currentsmoker1 eversmoker1  ///
