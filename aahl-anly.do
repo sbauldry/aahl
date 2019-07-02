@@ -1,9 +1,101 @@
 *** Purpose: analyze predictors of lifestyles and mortality
 *** Author: S Bauldry
-*** Date: October 26, 2018
+*** Date: July 1, 2019
+
+*** Defining program to calculate entropy
+capture program drop ent
+program ent
+  args nc 
+
+  qui predict cp* if e(sample), classposteriorpr
+  forval k = 1/`nc' {
+    qui gen sum_p_lnp_`k' = cp`k'*ln(cp`k')
+  }
+  qui egen sum_p_lnp = rowtotal(sum_p_lnp_*)
+  qui sum sum_p_lnp
+  local E = 1 + `r(sum)'/( e(N)*ln(`nc') )
+  di "Entropy = " `E'
+  drop cp* sum_p_lnp_* sum_p_lnp
+end
+
+
+
 
 *** Set working directory
-cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-7
+cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-8
+
+*** Load prepared data
+use aahl-data, replace
+
+
+*** Unconditional models for men
+* 2-class men
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) if fem == 0, lclass(C 2) ///
+  nodvheader nonrtolerance
+mat mb2 = e(b)
+
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) (2: 3.drk <- _cons@-15) ///
+  if fem == 0, lclass(C 2) nodvheader from(mb2)
+est sto um2
+ent 2
+
+* 3-class men
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) if fem == 0, lclass(C 3) ///
+  nodvheader 
+est sto um33
+ent 3
+
+* 4-class men
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) if fem == 0, lclass(C 4) ///
+  nodvheader nonrtolerance
+mat umb4 = e(b)
+
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) (1: 2.smk <- _cons@-15) ///
+  (2: 3.smk <- _cons@-15) (3: 3.drk <- _cons@-15) (3: fvg <- _cons@15) ///
+  if fem == 0, lclass(C 4) nodvheader from(umb4)
+est sto um44
+ent 4
+
+est stats um2 um3 um4
+
+
+*** Conditional models for men
+* 2-class men
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) ///
+  (C <- age edu i.occ sss dib cvd) if fem == 0, lclass(C 2) nodvheader ///
+  nonrtolerance
+mat cmb2 = e(b)
+
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) ///
+  (C <- age edu i.occ sss dib cvd) if fem == 0, lclass(C 2) nodvheader ///
+  from(cmb2)
+est sto cm2
+ent 2
+
+* 3-class men
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) ///
+  (C <- age edu i.occ sss dib cvd) if fem == 0, lclass(C 3) nodvheader
+est sto cm3
+ent 3
+
+* 4-class men
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) ///
+  (C <- age edu i.occ sss dib cvd) if fem == 0, lclass(C 4) nodvheader ///
+  nonrtolerance em(iter(5)) iter(100)
+mat cmb4 = e(b)
+
+gsem (smk drk <-, mlogit) (exr fvg sbv <-, logit) (2: 3.drk <- _cons@-15) ///
+  (C <- age edu i.occ sss dib cvd) if fem == 0, lclass(C 4) nodvheader ///
+  from(cmb4)
+est sto cm4
+ent 4
+
+est stat cm2 cm3 cm4
+
+
+
+
+
 
 *** Extract class assignments
 capture program drop ReadClass
