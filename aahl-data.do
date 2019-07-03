@@ -68,10 +68,10 @@ lab def oc 1 "management/professional" 2 "service/sales" ///
            3 "construction/production" 
 lab val occ oc
 
-recode pdsa18a (0/11 = 1) (12 = 2) (13/15 = 3) (16 = 4) (17/19 = 5), gen(edu)
+recode pdsa18a (0/11 = 1) (12 = 2) (13/15 = 3) (16/19 = 4), gen(edu)
 
 rename (dailydiscr1 lifetimediscrm1 discrmburden1 diab3cat cvdhx age1 death ///
-  lastdate pdsa2a) (dds ltd dsb dib cvd age dth ldt sss)
+  lastdate pdsa2a pdsa18a) (dds ltd dsb dib cvd age dth ldt sss sch)
 
 gen fem = (male == 0) if !mi(male)
 
@@ -84,7 +84,8 @@ keep if !mi(occ)
 keep if age >= 50
 sort subjid
 gen id = _n
-order id smk drk exr fvg sbv age fem edu inc occ sss dds ltd dsb dib cvd dth agd
+order id smk drk exr fvg sbv age fem edu sch inc occ sss dds ltd dsb dib cvd ///
+  dth agd
 keep id-agd
 save aahl-data, replace
 

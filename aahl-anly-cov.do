@@ -3,6 +3,15 @@
 *** Date: July 2, 2019
 
 
+*** Margins wrapper for MI
+capture program drop mimrg
+program mimrg, eclass properties(mi)
+  args vs f
+  mlogit cls `vs' if fem == `f'
+  margins, dydx(*) post
+end
+
+
 *** Set working directory
 cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-8
 
@@ -20,35 +29,12 @@ mi imp chain (ologit) edu dib (mlogit) occ (regress)inc sss dds ltd dsb ///
 
 
 *** predictors of class membership
-eststo clear
-
-qui mi est, post: mlogit cls age edu inc i.occ sss i.dib cvd if !fem
-eststo m1
-
-qui mi est, post: mlogit cls age edu inc i.occ sss i.dib cvd if !fem, base(2)
-eststo m2
-
-qui mi est, post: mlogit cls age edu inc i.occ sss i.dib cvd if fem
-eststo m3
-
-qui mi est, post: mlogit cls age edu inc i.occ sss i.dib cvd if fem, base(2)
-eststo m4
-
-esttab m1 m2 m3 m4 using t1.csv, replace wide b(%5.2f) se(%5.2f) nodep nonum ///
-  nogap unstack eform
+mi est: mimrg "age i.edu inc i.occ sss dds ltd dsb i.dib cvd" 0
+mi est: mimrg "age i.edu inc i.occ sss dds ltd dsb i.dib cvd" 1
   
-
 
 *** predictors of mortality
 mi stset agd, failure(dth)
 
-eststo clear
-
-mi est, post: stcox b3.cls age edu inc i.occ sss i.dib cvd if !fem
-eststo m1
-
-mi est, post: stcox b3.cls age edu inc i.occ sss i.dib cvd if fem
-eststo m2
-
-esttab m1 m2 using t2.csv, replace wide b(%5.2f) se(%5.2f) nodep nonum ///
-  nogap unstack eform
+mi est: stcox b3.cls age i.edu inc i.occ sss dds ltd dsb i.dib cvd if !fem
+mi est: stcox b3.cls age i.edu inc i.occ sss dds ltd dsb i.dib cvd if fem
