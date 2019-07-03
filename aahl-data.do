@@ -6,10 +6,10 @@
 cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-8
 
 *** Extract variables
-use subjid male age1 fmlyinc1 edu3cat alcw1 currentsmoker1 eversmoker1  ///
-    idealhealthpa1 nutrition3cat1 diab3cat1 cvdhx1 death lastdate       ///
-	occupation1 brthyr brthmo using                                     ///
-	"~/dropbox/research/data/JHS/aahl-JHS-Total", replace
+use subjid male age1 fmlyinc1 edu3cat alcw1 currentsmoker1 eversmoker1   ///
+    idealhealthpa1 nutrition3cat1 diab3cat1 cvdhx1 death lastdate        ///
+	 occupation1 brthyr brthmo dailydiscr1 lifetimediscrm1 discrmburden1  ///
+    using "~/dropbox/research/data/JHS/aahl-JHS-Total", replace
 	
 merge 1:1 subjid using "~/dropbox/research/data/JHS/aahl-JHS-data2", ///
   keepusing(pdsa18a ds_fruveg ds_swtbev)
@@ -70,7 +70,8 @@ lab val occ oc
 
 recode pdsa18a (0/11 = 1) (12 = 2) (13/15 = 3) (16 = 4) (17/19 = 5), gen(edu)
 
-rename (diab3cat cvdhx age1 death lastdate pdsa2a) (dib cvd age dth ldt sss)
+rename (dailydiscr1 lifetimediscrm1 discrmburden1 diab3cat cvdhx age1 death ///
+  lastdate pdsa2a) (dds ltd dsb dib cvd age dth ldt sss)
 
 gen fem = (male == 0) if !mi(male)
 
@@ -83,13 +84,13 @@ keep if !mi(occ)
 keep if age >= 50
 sort subjid
 gen id = _n
-order id smk drk exr fvg sbv age fem edu inc occ sss dib cvd dth agd
+order id smk drk exr fvg sbv age fem edu inc occ sss dds ltd dsb dib cvd dth agd
 keep id-agd
 save aahl-data, replace
 
-*** saving lifestyle indicators for LCA in Mplus
+/*** saving lifestyle indicators for LCA in Mplus
 keep id smk drk exr fvg sbv fem
 recode _all (. = -9)
 outsheet using aahl-data-mplus.txt, replace comma nolab nonames
-
+*/
 
