@@ -20,21 +20,20 @@ use aahl-data-2, replace
 
 
 *** MI to addressing missing data in covariates
-drop smk drk exr fvg sbv
 mi set wide
-mi reg impute edu inc occ sss dib dds ltd dsb
-mi imp chain (ologit) edu dib (mlogit) occ (regress)inc sss dds ltd dsb ///
-  = i.cls age cvd dth agd, add(25) augment rseed(931225) by(fem)
-
+mi reg impute exr fvg sbv smk drk ba inc occ sss dib dds ltd
+mi imp chain (logit) ba fvg sbv (ologit) dib smk drk (mlogit) occ (regress) ///
+  inc sss dds ltd = i.cls age cvd dth agd, add(25) augment rseed(931225) by(fem)
+save aahl-mi-data-2, replace
 
 
 *** predictors of class membership
-mi est: mimrg "age i.edu inc i.occ sss dds ltd dsb i.dib cvd" 0
-mi est: mimrg "age i.edu inc i.occ sss dds ltd dsb i.dib cvd" 1
+mi est: mimrg "age ba inc i.occ sss dds ltd i.dib cvd" 0
+mi est: mimrg "age ba inc i.occ sss dds ltd i.dib cvd" 1
   
 
 *** predictors of mortality
 mi stset agd, failure(dth)
 
-mi est: stcox b3.cls age i.edu inc i.occ sss dds ltd dsb i.dib cvd if !fem
-mi est: stcox b3.cls age i.edu inc i.occ sss dds ltd dsb i.dib cvd if fem
+mi est: stcox b3.cls age ba inc i.occ sss dds ltd i.dib cvd if !fem
+mi est: stcox b3.cls age ba inc i.occ sss dds ltd i.dib cvd if fem
