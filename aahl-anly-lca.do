@@ -174,8 +174,8 @@ replace cls = 3 if fpp3 == mxfpp & e(sample)
 
 
 *** labeling and matching class for men and women
-recode cls (1 = 1) (2 = 3) (3 = 2) if fem
-lab def lst 1 "SD" 2 "UHD" 3 "H"
+recode cls (1 = 1) (2 = 3) (3 = 2) if !fem
+lab def lst 1 "UHS" 2 "UHD" 3 "MHL"
 lab val cls lst
 
 
@@ -204,41 +204,41 @@ graph bar (sum) est if cls == 1 & !fem, over(id, ///
   relabel(1 `" "Y" "Ex" "' 2 `" "Y" "FV" "' 3 `" "Y" "SD" "'         ///
   4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" 8 `" "M" "Drink" "' 9 "H"))  ///
   ylab(0(0.2)1, angle(h) grid gstyle(dot)) ytit("probability")       ///
-  tit("Smoker/Drinker (16%)") saving(`g1')
+  tit("Unhealthy Smoker (17%)") saving(`g1')
   
 graph bar (sum) est if cls == 2 & !fem, over(id, ///
   relabel(1 `" "Y" "Ex" "' 2 `" "Y" "FV" "' 3 `" "Y" "SD" "'         ///
   4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" 8 `" "M" "Drink" "' 9 "H"))  ///
   ylab(0(0.2)1, angle(h) grid gstyle(dot)) ytit("probability")       ///
-  tit("Unhealthy Diet (47%)") saving(`g2')
+  tit("Unhealthy Diet (29%)") saving(`g2')
   
 graph bar (sum) est if cls == 3 & !fem, over(id, ///
   relabel(1 `" "Y" "Ex" "' 2 `" "Y" "FV" "' 3 `" "Y" "SD" "'         ///
   4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" 8 `" "M" "Drink" "' 9 "H"))  ///
   ylab(0(0.2)1, angle(h) grid gstyle(dot)) ytit("probability")       ///
-  tit("Healthy (37%)")  saving(`g3')
+  tit("Most Healthy (54%)")  saving(`g3')
   
 graph bar (sum) est if cls == 1 & fem, over(id, ///
   relabel(1 `" "Y" "Ex" "' 2 `" "Y" "FV" "' 3 `" "Y" "SD" "'         ///
   4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" 8 `" "M" "Drink" "' 9 "H"))  ///
   ylab(0(0.2)1, angle(h) grid gstyle(dot)) ytit("probability")       ///
-  tit("Smoker/Drinker (7%)") saving(`g4')
+  tit("Unhealthy Smoker (6%)") saving(`g4')
   
 graph bar (sum) est if cls == 2 & fem, over(id, ///
   relabel(1 `" "Y" "Ex" "' 2 `" "Y" "FV" "' 3 `" "Y" "SD" "'         ///
   4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" 8 `" "M" "Drink" "' 9 "H"))  ///
   ylab(0(0.2)1, angle(h) grid gstyle(dot)) ytit("probability")       ///
-  tit("Unhealthy Diet (29%)") saving(`g5')
+  tit("Unhealthy Diet (19%)") saving(`g5')
   
 graph bar (sum) est if cls == 3 & fem, over(id, ///
   relabel(1 `" "Y" "Ex" "' 2 `" "Y" "FV" "' 3 `" "Y" "SD" "'         ///
   4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" 8 `" "M" "Drink" "' 9 "H"))  ///
   ylab(0(0.2)1, angle(h) grid gstyle(dot)) ytit("probability")       ///
-  tit("Healthy (64%)")  saving(`g6')
+  tit("Most Healthy (75%)")  saving(`g6')
   
-graph combine "`g1'" "`g2'" "`g3'", rows(1) tit("Male Health Lifestyles") ///
+graph combine "`g1'" "`g2'" "`g3'", rows(1) tit("Men: Health Lifestyles") ///
   saving(`g7')
-graph combine "`g4'" "`g5'" "`g6'", rows(1) tit("Female Health Lifestyles") ///
+graph combine "`g4'" "`g5'" "`g6'", rows(1) tit("Women: Health Lifestyles") ///
   saving(`g8')
   
 graph combine "`g7'" "`g8'", rows(2)

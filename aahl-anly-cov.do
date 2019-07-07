@@ -21,9 +21,9 @@ use aahl-data-2, replace
 
 *** MI to addressing missing data in covariates
 mi set wide
-mi reg impute exr fvg sbv smk drk ba inc occ sss dib dds ltd
-mi imp chain (logit) ba fvg sbv (ologit) dib smk drk (mlogit) occ (regress) ///
-  inc sss dds ltd = i.cls age cvd dth agd, add(25) augment rseed(931225) by(fem)
+mi reg impute ba inc occ sss dib dds ltd
+mi imp chain (logit) ba (ologit) dib (mlogit) occ (regress) inc sss dds ltd ///
+  = i.cls age cvd dth agd, add(25) augment rseed(931225) by(fem)
 save aahl-mi-data-2, replace
 
 
