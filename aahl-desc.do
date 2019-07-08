@@ -8,30 +8,25 @@ cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-8
 use aahl-mi-data-2, replace
 
 * health lifestyle indicators
-tab smk fem, col
-tab drk fem, col
-tab exr fem, col
-tab fvg fem, col
-tab sbv fem, col
-
-
-
-
-
-
-
-* for manuscript
-
 qui tab smk, gen(smk)
 qui tab drk, gen(drk)
+bysort fem: sum smk1-smk3 drk1-drk3 exr fvg sbv
 
-sum smk1-smk3 drk1-drk3 exr fvg sbv age ed2 ed3 db2 db3 cvd dth
-sum smk1-smk3 drk1-drk3 exr fvg sbv age ed2 ed3 db2 db3 cvd dth if male == 1
-sum smk1-smk3 drk1-drk3 exr fvg sbv age ed2 ed3 db2 db3 cvd dth if male == 0
+* covariates 
+foreach x of varlist age ba inc sss dds ltd cvd dth {
+  qui mi est: mean `x' if !fem
+  mat mt`x' = e(b_mi)
+  local m`x' = mt`x'[1,1]
+  
+  qui mi est: mean `x' if fem
+  mat ft`x' = e(b_mi)
+  local f`x' = ft`x'[1,1]
+  
+  dis "`x': " as res %5.3f `m`x'' " " as res %5.3f `f`x''
+}
 
+mi est: prop occ if !fem
+mi est: prop occ if fem
 
-* for visualization
-gen po = 1/_
-
-gen one = 1
-graph bar (sum) one, over(smk) by(fem) 
+mi est: prop dib if !fem
+mi est: prop dib if fem
