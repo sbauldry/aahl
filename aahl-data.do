@@ -81,8 +81,8 @@ gen bdt = mdy(brthmo, 15, brthyr)
 gen agd = (ldt - bdt)/364.25
 
 *** keeping analysis sample and variables
-keep if !mi(occ)
 keep if age >= 50
+keep if !mi(occ)
 sort subjid
 gen id = _n
 order id smk drk exr fvg sbv age fem edu sch ba inc occ sss dds ltd dsb dib ///

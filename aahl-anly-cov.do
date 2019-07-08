@@ -31,6 +31,8 @@ save aahl-mi-data-2, replace
 mi est: mimrg "age ba inc i.occ sss dds ltd i.dib cvd" 0
 mi est: mimrg "age ba inc i.occ sss dds ltd i.dib cvd" 1
   
+mi est: mimrg "age ba inc i.occ sss dds i.dib cvd" 0
+mi est: mimrg "age ba inc i.occ sss ltd i.dib cvd" 0
 
 *** predictors of mortality
 mi stset agd, failure(dth)
@@ -44,3 +46,7 @@ mi est, post: stcox b3.cls age ba inc i.occ sss dds ltd i.dib cvd if fem
 eststo m2
 
 esttab m1 m2 using ~/desktop/t3.csv, b(%9.3f) se(%9.3f) eform compress nogaps
+
+
+mi est, post: stcox b1.cls age ba inc i.occ sss dds ltd i.dib cvd if !fem
+mi est, post: stcox b1.cls age ba inc i.occ sss dds ltd i.dib cvd if fem
