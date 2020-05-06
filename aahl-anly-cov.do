@@ -6,52 +6,64 @@
 *** Margins wrapper for MI
 capture program drop mimrg
 program mimrg, eclass properties(mi)
-  args vs f
-  mlogit cls `vs' if fem == `f'
+  args lst vs sam
+  mlogit `lst' `vs' if `sam'
   margins, dydx(*) post
 end
 
 
 *** Set working directory
-cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-8
+cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-9
 
 *** Load prepared data with class assignments
 use aahl-data-2, replace
 
 
+*** Combining lifestyle measure
+gen lst = flst
+recode mlst (1 = 1) (2 = 3) (3 = 2)
+replace lst = mlst if mi(lst)
+
 *** MI to addressing missing data in covariates
 mi set wide
-mi reg impute ba inc occ sss dib dds ltd
-mi imp chain (logit) ba (ologit) dib (mlogit) occ (regress) inc sss dds ltd ///
-  = i.cls age cvd dth agd, add(25) augment rseed(931225) by(fem)
+mi reg impute inc sss dib
+mi imp chain (ologit) dib (regress) inc sss  = age cvd i.occ ba i.lst, ///
+  add(25) augment rseed(931225) by(fem)
 save aahl-mi-data-2, replace
 
 
-*** predictors of class membership
-mi est: mimrg "age ba inc i.occ sss dds ltd i.dib cvd" 0
-mi est: mimrg "age ba inc i.occ sss dds ltd i.dib cvd" 1
+*** Descriptives
+* health lifestyle indicators
+qui tab smk, gen(smk)
+qui tab drk, gen(drk)
+bysort fem: sum smk1-smk3 drk1-drk3 exr fvg sbv
+
+* covariates
+foreach x of varlist age ba inc sss cvd {
+  qui mi est: mean `x' if !fem
+  mat mt`x' = e(b_mi)
+  local m`x' = mt`x'[1,1]
   
-mi est: mimrg "age ba inc i.occ sss dds i.dib cvd" 0
-mi est: mimrg "age ba inc i.occ sss ltd i.dib cvd" 0
+  qui mi est: mean `x' if fem
+  mat ft`x' = e(b_mi)
+  local f`x' = ft`x'[1,1]
+  
+  dis "`x': " as res %5.3f `m`x'' " " as res %5.3f `f`x''
+}
 
-mi est: mimrg "age dds ltd" 0
-mi est: mimrg "age dds ltd" 1
+mi est: prop occ if !fem
+mi est: prop occ if fem
 
-*** predictors of mortality
-mi stset agd, failure(dth)
-
-eststo clear
-
-mi est, post: stcox b3.cls ba inc i.occ sss dds ltd i.dib cvd if !fem
-eststo m1
-
-mi est, post: stcox b3.cls ba inc i.occ sss dds ltd i.dib cvd if fem
-eststo m2
-
-esttab m1 m2 using ~/desktop/t3.csv, b(%9.3f) se(%9.3f) eform compress nogaps
+mi est: prop dib if !fem
+mi est: prop dib if fem
 
 
-mi est, post: stcox b1.cls ba inc i.occ sss dds ltd i.dib cvd if !fem
-mi est, post: stcox b1.cls ba inc i.occ sss dds ltd i.dib cvd if fem
 
-mi est, post: stcox ba if !fem
+*** predictors of health lifestyle membership
+tab mlst
+mi est: mimrg mlst "age ba inc i.occ sss i.dib cvd" "fem == 0"
+
+tab flst
+mi est: mimrg flst "age ba inc i.occ sss i.dib cvd" "fem == 1"
+
+

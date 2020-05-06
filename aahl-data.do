@@ -1,14 +1,14 @@
-*** Purpose: prepare JHS data for analysis of health lifestyles
+*** Purpose: Prepare JHS data for analysis of health lifestyles
 *** Author:  S Bauldry 
-*** Date:    July 1, 2019
+*** Date:    May 5, 2020
 
 *** Setting working directory
-cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-8
+cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-9
+
 
 *** Extract variables
-use subjid male age1 fmlyinc1 edu3cat alcw1 currentsmoker1 eversmoker1   ///
-    idealhealthpa1 nutrition3cat1 diab3cat1 cvdhx1 death lastdate        ///
-	 occupation1 brthyr brthmo dailydiscr1 lifetimediscrm1 discrmburden1  ///
+use subjid male age1 fmlyinc1 edu3cat alcw1 currentsmoker1 eversmoker1       ///
+    idealhealthpa1 nutrition3cat1 diab3cat1 cvdhx1 occupation1 brthyr brthmo ///
     using "~/dropbox/research/data/JHS/aahl-JHS-Total", replace
 	
 merge 1:1 subjid using "~/dropbox/research/data/JHS/aahl-JHS-data2", ///
@@ -61,7 +61,7 @@ destring fmlyinc1, replace
 gen inc = ln(fmlyinc1)
 lab var inc "ln family income"
 
-* setting framing, military, sick, unemployed, homemaker, retired, student, and
+* setting farming, military, sick, unemployed, homemaker, retired, student, and
 * other to missing (N = 52; < 1%)
 recode occupation1 (1 = 1) (2 3 = 2) (5 6 = 3) (4 7/13 = .), gen(occ)
 lab def oc 1 "management/professional" 2 "service/sales" ///
@@ -71,28 +71,16 @@ lab val occ oc
 recode pdsa18a (0/11 = 1) (12 = 2) (13/15 = 3) (16/19 = 4), gen(edu)
 recode pdsa18a (0/15 = 0) (16/19 = 1), gen(ba)
 
-rename (dailydiscr1 lifetimediscrm1 discrmburden1 diab3cat cvdhx age1 death ///
-  lastdate pdsa2a pdsa18a) (dds ltd dsb dib cvd age dth ldt sss sch)
+rename (diab3cat cvdhx age1 pdsa2a pdsa18a) (dib cvd age sss sch)
 
 gen fem = (male == 0) if !mi(male)
 
-*** calculating age at death or censoring
-gen bdt = mdy(brthmo, 15, brthyr)
-gen agd = (ldt - bdt)/364.25
-
 *** keeping analysis sample and variables
-keep if age >= 50
-keep if !mi(occ)
+keep if age >= 50 & age < 65
+keep if !mi(occ, ba)
 sort subjid
 gen id = _n
-order id smk drk exr fvg sbv age fem edu sch ba inc occ sss dds ltd dsb dib ///
-  cvd dth agd
-keep id-agd
+order id smk drk exr fvg sbv age fem edu sch ba inc occ sss dib cvd 
+keep id-cvd
 save aahl-data, replace
-
-/*** saving lifestyle indicators for LCA in Mplus
-keep id smk drk exr fvg sbv fem
-recode _all (. = -9)
-outsheet using aahl-data-mplus.txt, replace comma nolab nonames
-*/
 
