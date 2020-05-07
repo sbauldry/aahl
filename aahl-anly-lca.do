@@ -132,7 +132,7 @@ graph bar (sum) irp if lst == 3, over(v, relabel(1 `" "Y" "Ex" "' ///
 graph bar (sum) irp if lst == 2, over(v, relabel(1 `" "Y" "Ex" "' ///
   2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
   8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Most Healthy (55%)") scheme(s1color) ///
+  ytit("probability") tit("Healthy Diet (55%)") scheme(s1color) ///
   saving(`g3')
   
 graph combine "`g1'" "`g2'" "`g3'", scheme(s1color)
