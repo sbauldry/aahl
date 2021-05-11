@@ -2,21 +2,29 @@
 *** Author: S Bauldry
 *** Date: July 2, 2019
 
+*** Setting directory
+local dk "~/desktop"
 
-*** Margins wrapper for MI
-capture program drop mimrg
-program mimrg, eclass properties(mi)
+
+*** Margins wrappers for MI
+capture program drop mimrg1
+program mimrg1, eclass properties(mi)
   args lst vs sam
   mlogit `lst' `vs' if `sam'
   margins, dydx(*) post
 end
 
+capture program drop mimrg2
+program mimrg2, eclass properties(mi)
+  args dv vs sam
+  logit `dv' `vs' if `sam'
+  margins, dydx(*) post
+end
 
-*** Set working directory
-cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-9
+
 
 *** Load prepared data with class assignments
-use aahl-data-2, replace
+use "`dk'/aahl-data-2", replace
 
 
 *** Combining lifestyle measure
@@ -26,10 +34,10 @@ replace lst = mlst if mi(lst)
 
 *** MI to addressing missing data in covariates
 mi set wide
-mi reg impute inc sss dib
+mi reg impute inc sss dib 
 mi imp chain (ologit) dib (regress) inc sss  = age cvd i.occ ba i.lst, ///
   add(25) augment rseed(931225) by(fem)
-save aahl-mi-data-2, replace
+save "`dk'/aahl-mi-data-2", replace
 
 
 *** Descriptives
@@ -61,9 +69,17 @@ mi est: prop dib if fem
 
 *** predictors of health lifestyle membership
 tab mlst
-mi est: mimrg mlst "age ba inc i.occ sss i.dib cvd" "fem == 0"
+mi est: mimrg1 mlst "age ba inc i.occ sss i.dib cvd" "fem == 0"
 
 tab flst
-mi est: mimrg flst "age ba inc i.occ sss i.dib cvd" "fem == 1"
+mi est: mimrg1 flst "age ba inc i.occ sss i.dib cvd" "fem == 1"
 
 
+
+*** relationship between health lifestyles and bmi/obesity
+mi est: mimrg2 obe3 "i.mlst age ba inc i.occ sss i.dib cvd" "fem == 0"
+mi est: mimrg2 obe3 "i.flst age ba inc i.occ sss i.dib cvd" "fem == 1"
+
+
+
+mi est: logit obe3 i.lst age ba inc i.occ sss i.dib cvd if fem == 1

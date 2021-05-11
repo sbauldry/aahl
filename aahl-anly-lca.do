@@ -1,6 +1,10 @@
 *** Purpose: Identify health lifestyles
 *** Author:  S Bauldry
-*** Date:    May 5, 2020
+*** Date:    May 11, 2021
+
+
+*** Setting directory
+local dk "~/desktop"
 
 
 *** Defining program to calculate entropy
@@ -35,9 +39,8 @@ end
 
 
 
-*** Set working directory and loading data
-cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-9
-use aahl-data, replace
+*** Loading data
+use "`dk'/aahl-data", replace
 
 
 *** Identifying best fitting models
@@ -136,7 +139,7 @@ graph bar (sum) irp if lst == 2, over(v, relabel(1 `" "Y" "Ex" "' ///
   saving(`g3')
   
 graph combine "`g1'" "`g2'" "`g3'", scheme(s1color)
-graph export ~/desktop/aahl-fig1.pdf, replace
+graph export "`dk'/aahl-fig1.pdf", replace
 restore
 
 
@@ -192,7 +195,7 @@ graph bar (sum) irp if lst == 4, over(v, relabel(1 `" "Y" "Ex" "' ///
   saving(`g4')
   
 graph combine "`g1'" "`g2'" "`g3'" "`g4'", scheme(s1color)
-graph export ~/desktop/aahl-fig2.pdf, replace
+graph export "`dk'/aahl-fig2.pdf", replace
 restore
 
 
@@ -200,6 +203,6 @@ restore
 *** Saving class assignments for additional analysis
 est clear
 drop mp* mxmp fp* mxfp
-save aahl-data-2, replace
+save "`dk'/aahl-data-2", replace
 
 

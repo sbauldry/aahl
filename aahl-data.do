@@ -1,21 +1,21 @@
 *** Purpose: Prepare JHS data for analysis of health lifestyles
 *** Author:  S Bauldry 
-*** Date:    May 5, 2020
+*** Date:    May 11, 2021
 
-*** Setting working directory
-cd ~/dropbox/research/hlthineq/aahl/aahl-work/aahl-anal-9
-
+*** Setting directories
+local rd "~/google drive/research/data/JHS"
+local dk "~/desktop"
 
 *** Extract variables
-use subjid male age1 fmlyinc1 edu3cat alcw1 currentsmoker1 eversmoker1       ///
+use subjid male age1 fmlyinc1 edu3cat bmi* alcw1 currentsmoker1 eversmoker1  ///
     idealhealthpa1 nutrition3cat1 diab3cat1 cvdhx1 occupation1 brthyr brthmo ///
-    using "~/dropbox/research/data/JHS/aahl-JHS-Total", replace
+    using "`rd'/aahl-JHS-Total", replace
 	
-merge 1:1 subjid using "~/dropbox/research/data/JHS/aahl-JHS-data2", ///
+merge 1:1 subjid using "`rd'/aahl-JHS-data2", ///
   keepusing(pdsa18a ds_fruveg ds_swtbev)
 drop _merge
 
-merge 1:1 subjid using "~/dropbox/research/data/JHS/aahl-JHS-data3", ///
+merge 1:1 subjid using "`rd'/aahl-JHS-data3", ///
   keepusing(pdsa2a)
 drop _merge
 
@@ -75,12 +75,16 @@ rename (diab3cat cvdhx age1 pdsa2a pdsa18a) (dib cvd age sss sch)
 
 gen fem = (male == 0) if !mi(male)
 
+* constructing indicators for obese 
+recode bmi3cat1 bmi3cat2 bmi3cat3 (0 = 1) (1 2 = 0), gen(obe1 obe2 obe3)
+
 *** keeping analysis sample and variables
 keep if age >= 50 & age < 65
 keep if !mi(occ, ba)
 sort subjid
 gen id = _n
-order id smk drk exr fvg sbv age fem edu sch ba inc occ sss dib cvd 
-keep id-cvd
-save aahl-data, replace
+order id smk drk exr fvg sbv age fem edu sch ba inc occ sss dib cvd bmi1 ///
+  bmi2 bmi3 obe1 obe2 obe3
+keep id-obe3
+save "`dk'/aahl-data", replace
 
