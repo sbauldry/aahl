@@ -32,6 +32,13 @@ gen lst = flst
 recode mlst (1 = 1) (2 = 3) (3 = 2)
 replace lst = mlst if mi(lst)
 
+
+*** lifestyle membership and obesity/caloric intake
+table lst if fem, c(mean pcf mean pcp mean pcc mean obe3)
+table lst if !fem, c(mean pcf mean pcp mean pcc mean obe3)
+
+
+
 *** MI to addressing missing data in covariates
 mi set wide
 mi reg impute inc sss dib 
@@ -73,6 +80,8 @@ mi est: mimrg1 mlst "age ba inc i.occ sss i.dib cvd" "fem == 0"
 
 tab flst
 mi est: mimrg1 flst "age ba inc i.occ sss i.dib cvd" "fem == 1"
+
+
 
 
 

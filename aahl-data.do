@@ -3,7 +3,7 @@
 *** Date:    May 11, 2021
 
 *** Setting directories
-local rd "~/google drive/research/data/JHS"
+local rd "~/dropbox/research/data/JHS"
 local dk "~/desktop"
 
 *** Extract variables
@@ -19,8 +19,10 @@ merge 1:1 subjid using "`rd'/aahl-JHS-data3", ///
   keepusing(pdsa2a)
 drop _merge
 
-mi unset, asis
+merge 1:1 subjid using "`rd'/JHS-caloric-intake"
+drop _merge
 
+mi unset, asis
 
 *** preparing variables for analysis
 gen smk = .
@@ -78,13 +80,16 @@ gen fem = (male == 0) if !mi(male)
 * constructing indicators for obese 
 recode bmi3cat1 bmi3cat2 bmi3cat3 (0 = 1) (1 2 = 0), gen(obe1 obe2 obe3)
 
+* preparing caloric intake measures
+rename (DITA134 DITA135 DITA136) (pcf pcp pcc)
+
 *** keeping analysis sample and variables
 keep if age >= 50 & age < 65
 keep if !mi(occ, ba)
 sort subjid
 gen id = _n
 order id smk drk exr fvg sbv age fem edu sch ba inc occ sss dib cvd bmi1 ///
-  bmi2 bmi3 obe1 obe2 obe3
-keep id-obe3
+  bmi2 bmi3 obe1 obe2 obe3 pcf pcp pcc
+keep id-pcc
 save "`dk'/aahl-data", replace
 
