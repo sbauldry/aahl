@@ -52,9 +52,20 @@ save "`dk'/aahl-mi-data-2", replace
 qui tab smk, gen(smk)
 qui tab drk, gen(drk)
 bysort fem: sum smk1-smk3 drk1-drk3 exr fvg sbv
+foreach x of varlist smk1-smk3 drk1-drk3 exr fvg sbv {
+  ttest `x', by(fem)
+}
 
 * covariates
-foreach x of varlist age ba inc sss cvd {
+mi xeq: gen occ1 = (occ == 1)
+mi xeq: gen occ2 = (occ == 2)
+mi xeq: gen occ3 = (occ == 3)
+
+mi xeq: gen dib1 = (dib == 0)
+mi xeq: gen dib2 = (dib == 1)
+mi xeq: gen dib3 = (dib == 2)
+
+foreach x of varlist age ba inc occ1-occ3 sss dib1-dib3 cvd {
   qui mi est: mean `x' if !fem
   mat mt`x' = e(b_mi)
   local m`x' = mt`x'[1,1]
@@ -63,16 +74,11 @@ foreach x of varlist age ba inc sss cvd {
   mat ft`x' = e(b_mi)
   local f`x' = ft`x'[1,1]
   
-  dis "`x': " as res %5.3f `m`x'' " " as res %5.3f `f`x''
+  qui mi est: reg `x' i.fem
+  local pv = e(p_mi)
+  
+  dis "`x': " as res %5.3f `m`x'' " " as res %5.3f `f`x'' " "as res %5.3f `pv'
 }
-
-mi est: prop occ if !fem
-mi est: prop occ if fem
-
-mi est: prop dib if !fem
-mi est: prop dib if fem
-
-
 
 *** predictors of health lifestyle membership
 tab mlst
