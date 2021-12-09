@@ -43,6 +43,7 @@ end
 use "`dk'/aahl-data", replace
 
 
+
 *** Identifying best fitting models
 est clear
 
@@ -100,7 +101,7 @@ ent 5
 est res m3
 estat lcprob, nose
 estat lcmean, nose
-mat irp = r(b)
+mat irp1 = r(table)
 
 predict mp* if e(sample), classposteriorpr
 egen mxmp = rowmax(mp*)
@@ -108,46 +109,12 @@ gen     mlst = 1 if mp1 == mxmp & e(sample)
 replace mlst = 2 if mp2 == mxmp & e(sample)
 replace mlst = 3 if mp3 == mxmp & e(sample)
 
-preserve
-clear
-svmat irp
-gen id = 1
-reshape long irp, i(id) j(v)
-gen lst = 1 if _n < 10
-replace lst = 2 if _n < 19 & mi(lst)
-replace lst = 3 if mi(lst)
-replace v = v - 9 if _n >= 10
-replace v = v - 9 if _n >= 19
-
-tempfile g1 g2 g3
-graph bar (sum) irp if lst == 1, over(v, relabel(1 `" "Y" "Ex" "' ///
-  2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
-  8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Unhealthy Smoker (19%)") scheme(s1color) ///
-  saving(`g1')
-  
-graph bar (sum) irp if lst == 3, over(v, relabel(1 `" "Y" "Ex" "' ///
-  2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
-  8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Unhealthy Diet (27%)") scheme(s1color) ///
-  saving(`g2')
-  
-graph bar (sum) irp if lst == 2, over(v, relabel(1 `" "Y" "Ex" "' ///
-  2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
-  8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Healthy Diet (55%)") scheme(s1color) ///
-  saving(`g3')
-  
-graph combine "`g1'" "`g2'" "`g3'", scheme(s1color)
-graph export "`dk'/aahl-fig1.pdf", replace
-restore
-
 
 *** 4-class women
 est res f4
 estat lcprob, nose
 estat lcmean, nose
-mat irp = r(b)
+mat irp2 = r(table)
 
 predict fp* if e(sample), classposteriorpr
 egen mxfp = rowmax(fp*)
@@ -156,53 +123,8 @@ replace flst = 2 if fp2 == mxfp & e(sample)
 replace flst = 3 if fp3 == mxfp & e(sample)
 replace flst = 4 if fp4 == mxfp & e(sample)
 
-preserve
-clear
-svmat irp
-gen id = 1
-reshape long irp, i(id) j(v)
-gen lst = 1 if _n < 10
-replace lst = 2 if _n < 19 & mi(lst)
-replace lst = 3 if _n < 28 & mi(lst)
-replace lst = 4 if mi(lst)
-replace v = v - 9 if _n >= 10
-replace v = v - 9 if _n >= 19
-replace v = v - 9 if _n >= 28
-
-tempfile g1 g2 g3 g4
-graph bar (sum) irp if lst == 1, over(v, relabel(1 `" "Y" "Ex" "' ///
-  2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
-  8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Unhealthy Smoker (10%)") scheme(s1color) ///
-  saving(`g1')
-  
-graph bar (sum) irp if lst == 2, over(v, relabel(1 `" "Y" "Ex" "' ///
-  2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
-  8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Unhealthy Diet (11%)") scheme(s1color) ///
-  saving(`g2')
-  
-graph bar (sum) irp if lst == 3, over(v, relabel(1 `" "Y" "Ex" "' ///
-  2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
-  8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Healthy Diet (77%)") scheme(s1color) ///
-  saving(`g3')
-  
-graph bar (sum) irp if lst == 4, over(v, relabel(1 `" "Y" "Ex" "' ///
-  2 `" "Y" "FV" "' 3 `" "Y" "SD" "' 4 "N" 5 `" "P" "Smoke" "' 6 "C" 7 "A" ///
-  8 `" "M" "Drink" "' 9 "H")) ylab(0(0.2)1, angle(h) grid gstyle(dot)) ///
-  ytit("probability") tit("Most Healthy (2%)") scheme(s1color) ///
-  saving(`g4')
-  
-graph combine "`g1'" "`g2'" "`g3'" "`g4'", scheme(s1color)
-graph export "`dk'/aahl-fig2.pdf", replace
-restore
-
-
 
 *** Saving class assignments for additional analysis
 est clear
 drop mp* mxmp fp* mxfp
 save "`dk'/aahl-data-2", replace
-
-

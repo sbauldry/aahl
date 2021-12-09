@@ -51,12 +51,7 @@ save "`dk'/aahl-mi-data-2", replace
 * health lifestyle indicators
 qui tab smk, gen(smk)
 qui tab drk, gen(drk)
-bysort fem: sum smk1-smk3 drk1-drk3 exr fvg sbv
-foreach x of varlist smk1-smk3 drk1-drk3 exr fvg sbv {
-  ttest `x', by(fem)
-}
 
-* covariates
 mi xeq: gen occ1 = (occ == 1)
 mi xeq: gen occ2 = (occ == 2)
 mi xeq: gen occ3 = (occ == 3)
@@ -65,7 +60,12 @@ mi xeq: gen dib1 = (dib == 0)
 mi xeq: gen dib2 = (dib == 1)
 mi xeq: gen dib3 = (dib == 2)
 
-foreach x of varlist age ba inc occ1-occ3 sss dib1-dib3 cvd {
+foreach x of varlist smk1-smk3 drk1-drk3 exr fvg sbv age ba inc occ1-occ3 ///
+  sss dib1-dib3 cvd {
+  qui mi est: mean `x'
+  mat t`x' = e(b_mi)
+  local o`x' = t`x'[1,1]
+	
   qui mi est: mean `x' if !fem
   mat mt`x' = e(b_mi)
   local m`x' = mt`x'[1,1]
@@ -77,8 +77,36 @@ foreach x of varlist age ba inc occ1-occ3 sss dib1-dib3 cvd {
   qui mi est: reg `x' i.fem
   local pv = e(p_mi)
   
-  dis "`x': " as res %5.3f `m`x'' " " as res %5.3f `f`x'' " "as res %5.3f `pv'
+  dis "`x': " as res %5.3f `o`x'' " " as res %5.3f `m`x'' " " ///
+    as res %5.3f `f`x'' " "as res %5.3f `pv'
 }
+
+
+*** descriptives by health lifestyle membership
+foreach x of varlist age ba inc occ1-occ3 sss dib1-dib3 cvd {
+	
+	forval i = 1/3 {
+		qui mi est: mean `x' if !fem & lst == `i'
+		mat m`i'`x' = e(b_mi)
+		local m`i'`x' = m`i'`x'[1,1]
+	}
+
+	forval j = 1/4 {
+		qui mi est: mean `x' if fem & lst == `j'
+		mat f`j'`x' = e(b_mi)
+		local f`j'`x' = f`j'`x'[1,1]
+	}
+  
+  dis "`x': " as res %5.3f `m1`x'' " " ///
+              as res %5.3f `m2`x'' " " ///
+			  as res %5.3f `m3`x'' " " ///
+			  as res %5.3f `f1`x'' " " ///
+			  as res %5.3f `f2`x'' " " ///
+			  as res %5.3f `f3`x'' " " ///
+			  as res %5.3f `f4`x''
+
+}
+
 
 *** predictors of health lifestyle membership
 tab mlst
@@ -86,15 +114,3 @@ mi est: mimrg1 mlst "age ba inc i.occ sss i.dib cvd" "fem == 0"
 
 tab flst
 mi est: mimrg1 flst "age ba inc i.occ sss i.dib cvd" "fem == 1"
-
-
-
-
-
-*** relationship between health lifestyles and bmi/obesity
-mi est: mimrg2 obe3 "i.mlst age ba inc i.occ sss i.dib cvd" "fem == 0"
-mi est: mimrg2 obe3 "i.flst age ba inc i.occ sss i.dib cvd" "fem == 1"
-
-
-
-mi est: logit obe3 i.lst age ba inc i.occ sss i.dib cvd if fem == 1
