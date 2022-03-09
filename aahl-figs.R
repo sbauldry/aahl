@@ -18,7 +18,7 @@ irp <- irp %>%
 f1a <- ggplot(data = subset(irp, fem == 0 & lst == 1), mapping = aes(x = as.factor(vr), y = irp)) +
   geom_bar(stat = "identity") +
   geom_linerange(mapping = aes(x = as.factor(vr), ymin = lb, ymax = ub)) +
-  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSD", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
+  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSB", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
                    name = "") +
   scale_y_continuous(limits = c(0, 1), name = "probablity") +
   labs(title = "Unhealthy Smoker (19%)") +
@@ -27,7 +27,7 @@ f1a <- ggplot(data = subset(irp, fem == 0 & lst == 1), mapping = aes(x = as.fact
 f1b <- ggplot(data = subset(irp, fem == 0 & lst == 2), mapping = aes(x = as.factor(vr), y = irp)) +
   geom_bar(stat = "identity") +
   geom_linerange(mapping = aes(x = as.factor(vr), ymin = lb, ymax = ub)) +
-  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSD", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
+  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSB", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
                    name = "") +
   scale_y_continuous(limits = c(0, 1), name = "probablity") +
   labs(title = "Healthy Diet (55%)") +
@@ -36,7 +36,7 @@ f1b <- ggplot(data = subset(irp, fem == 0 & lst == 2), mapping = aes(x = as.fact
 f1c <- ggplot(data = subset(irp, fem == 0 & lst == 3), mapping = aes(x = as.factor(vr), y = irp)) +
   geom_bar(stat = "identity") +
   geom_linerange(mapping = aes(x = as.factor(vr), ymin = lb, ymax = ub)) +
-  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSD", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
+  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSB", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
                    name = "") +
   scale_y_continuous(limits = c(0, 1), name = "probablity") +
   labs(title = "Unhealthy Diet (27%)") +
@@ -50,7 +50,7 @@ ggsave("~/desktop/aahl-fig1.pdf", plot = f1, dpi = 300)
 f2a <- ggplot(data = subset(irp, fem == 1 & lst == 1), mapping = aes(x = as.factor(vr), y = irp)) +
   geom_bar(stat = "identity") +
   geom_linerange(mapping = aes(x = as.factor(vr), ymin = lb, ymax = ub)) +
-  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSD", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
+  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSB", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
                    name = "") +
   scale_y_continuous(limits = c(0, 1), name = "probablity") +
   labs(title = "Unhealthy Smoker (10%)") +
@@ -59,7 +59,7 @@ f2a <- ggplot(data = subset(irp, fem == 1 & lst == 1), mapping = aes(x = as.fact
 f2b <- ggplot(data = subset(irp, fem == 1 & lst == 2), mapping = aes(x = as.factor(vr), y = irp)) +
   geom_bar(stat = "identity") +
   geom_linerange(mapping = aes(x = as.factor(vr), ymin = lb, ymax = ub)) +
-  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSD", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
+  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSB", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
                    name = "") +
   scale_y_continuous(limits = c(0, 1), name = "probablity") +
   labs(title = "Unhealthy Diet (11%)") +
@@ -68,7 +68,7 @@ f2b <- ggplot(data = subset(irp, fem == 1 & lst == 2), mapping = aes(x = as.fact
 f2c <- ggplot(data = subset(irp, fem == 1 & lst == 3), mapping = aes(x = as.factor(vr), y = irp)) +
   geom_bar(stat = "identity") +
   geom_linerange(mapping = aes(x = as.factor(vr), ymin = lb, ymax = ub)) +
-  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSD", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
+  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSB", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
                    name = "") +
   scale_y_continuous(limits = c(0, 1), name = "probablity") +
   labs(title = "Healthy Diet (77%)") +
@@ -77,7 +77,7 @@ f2c <- ggplot(data = subset(irp, fem == 1 & lst == 3), mapping = aes(x = as.fact
 f2d <- ggplot(data = subset(irp, fem == 1 & lst == 4), mapping = aes(x = as.factor(vr), y = irp)) +
   geom_bar(stat = "identity") +
   geom_linerange(mapping = aes(x = as.factor(vr), ymin = lb, ymax = ub)) +
-  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSD", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
+  scale_x_discrete(label = c("Y\nEx", "Y\nFV", "Y\nSB", "N", "P\nSmoke", "C", "A", "M\nDrink", "H"),
                    name = "") +
   scale_y_continuous(limits = c(0, 1), name = "probablity") +
   labs(title = "Most Healthy (2%)") +
